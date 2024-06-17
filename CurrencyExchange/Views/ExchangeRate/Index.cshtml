@@ -1,0 +1,46 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model IEnumerable<CurrencyExchange.Entities.ExchangeRate>
+
+@{
+    ViewData["Title"] = "Exchange Rates";
+}
+
+<h2>Exchange Rates</h2>
+
+<p>
+    <a asp-action="Add" class="btn btn-primary">Add New Exchange Rate</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Currency</th>
+            <th>Buy Rate</th>
+            <th>Sales Rate</th>
+            <th>User</th>
+            <th>Commission Percentage</th>
+            <th>Commission Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var rate in Model)
+        {
+            <tr>
+                <td>@rate.Currency?.Name</td> <!-- Assuming Currency has a Name property -->
+                <td>@rate.BuyRate</td>
+                <td>@rate.SalesRate</td>
+                <td>@rate.User</td>
+                <td>@rate.CommiPer</td>
+                <td>@rate.CommiRs</td>
+                <td>
+                    <a asp-controller="ExchangeRate" asp-action="Edit" asp-route-id="@rate.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-controller="ExchangeRate" asp-action="Delete" asp-route-id="@rate.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

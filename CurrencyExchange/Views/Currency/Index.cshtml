@@ -1,0 +1,45 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<a class="nav-link text-dark" asp-area="" asp-controller="Currency" asp-action="Index">Currency</a>
+
+@{
+    ViewData["Title"] = "Currency";
+}
+
+<h1>Currency List</h1>
+
+<p>
+    <a asp-controller="Currency" asp-action="Add" class="btn btn-primary">Add New Currency</a>
+</p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Decimal Name</th>
+            <th>Non-Decimal Name</th>
+            <th>Million/Lakh</th>
+            <th>Symbol</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var currency in Model)
+        {
+            <tr>
+                <td>@currency.Name</td>
+                <td>@currency.Decimalname</td>
+                <td>@currency.Nondecimal</td>
+                <td>@currency.Millionlakh</td>
+                <td>@currency.Symbol</td>
+                <td>
+                    <a asp-controller="Currency" asp-action="Edit" asp-route-id="@currency.ID" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-controller="Currency" asp-action="Delete" asp-route-id="@currency.ID" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

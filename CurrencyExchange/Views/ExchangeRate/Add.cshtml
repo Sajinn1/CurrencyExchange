@@ -1,0 +1,57 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model CurrencyExchange.Models.AddExchangeRateViewModel
+
+
+<h1>Add Exchange Rate</h1>
+
+<form asp-action="Add">
+    <div class="form-group">
+        <label asp-for="CurrencyID">Currency</label>
+        <select asp-for="CurrencyID" asp-items="@Model.Currencies" class="form-control">
+            <option>Please select a currency...</option>
+        </select>
+        <span asp-validation-for="CurrencyID" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="BuyRate">Buy Rate</label>
+        <input asp-for="BuyRate" class="form-control" />
+        <span asp-validation-for="BuyRate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="SalesRate">Sales Rate</label>
+        <input asp-for="SalesRate" class="form-control" />
+        <span asp-validation-for="SalesRate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="User">User</label>
+        <input asp-for="User" class="form-control" />
+        <span asp-validation-for="User" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CommiPer">Commission Percentage</label>
+        <input asp-for="CommiPer" class="form-control" />
+        <span asp-validation-for="CommiPer" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CommiRs">Commission (Rs)</label>
+        <input asp-for="CommiRs" class="form-control" />
+        <span asp-validation-for="CommiRs" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
