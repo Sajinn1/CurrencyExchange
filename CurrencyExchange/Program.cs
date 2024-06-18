@@ -1,4 +1,5 @@
 using CurrencyExchange.Data;
+using CurrencyExchange.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<CurrencyExchangeDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("CurrencyExchange")));
+builder.Services.AddScoped<ICurrencyConverterService, CurrencyConverterService>();
 
 var app = builder.Build();
 

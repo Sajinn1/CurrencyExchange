@@ -1,6 +1,7 @@
 ﻿using CurrencyExchange.Data;
 using CurrencyExchange.Entities;
 using CurrencyExchange.Models;
+using CurrencyExchange.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +15,61 @@ namespace CurrencyExchange.Controllers
     public class ExchangeRateController : Controller
     {
         private readonly CurrencyExchangeDbContext _context;
+        private readonly ICurrencyConverterService converterService;
 
-        public ExchangeRateController(CurrencyExchangeDbContext context)
+        public ExchangeRateController(ICurrencyConverterService converterService, CurrencyExchangeDbContext context)
         {
-            _context = context;   
+            this.converterService = converterService;
+            _context = context;
         }
+
+        [HttpGet]
+        public IActionResult Converter()
+        {
+            // Fetch Currencies for dropdowm
+            var currencies = _context.Currencies
+                                    .Select(c => new SelectListItem 
+                                    { 
+                                        Value = c.ID.ToString(), 
+                                        Text = c.Name
+                                    })
+                                    .ToList();
+            ViewBag.Currencies = currencies;
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Converter(decimal amount, Guid fromCurrencyID, Guid toCurrencyID)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    decimal convertedAmount = converterService.Convert(amount, fromCurrencyID, toCurrencyID);
+                    ViewBag.ConvertedAmount = convertedAmount;
+                    ViewBag.FromCurrency = fromCurrencyID;
+                    ViewBag.ToCurrency = toCurrencyID;
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
+
+                }
+            }
+            // Re-populate dropdown in case of validation errors
+            ViewBag.Currencies = _context.Currencies
+                                      .Select(c => new SelectListItem
+                                      {
+                                          Value = c.ID.ToString(),
+                                          Text = c.Name
+                                      })
+                                      .ToList();
+
+            return View();
+        }
+
+
 
         // GET: ExchangeRate/Add
         public IActionResult Add()
