@@ -27,14 +27,7 @@ namespace CurrencyExchange.Controllers
         public IActionResult Converter()
         {
             // Fetch Currencies for dropdowm
-            var currencies = _context.Currencies
-                                    .Select(c => new SelectListItem 
-                                    { 
-                                        Value = c.ID.ToString(), 
-                                        Text = c.Name
-                                    })
-                                    .ToList();
-            ViewBag.Currencies = currencies;
+            ViewBag.Currencies = GetCurrencySelectListItems();
             return View();
         }
 
@@ -42,31 +35,48 @@ namespace CurrencyExchange.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Converter(decimal amount, Guid fromCurrencyID, Guid toCurrencyID)
         {
-            if (ModelState.IsValid)
+            // Validate currency IDs
+            var fromCurrency = _context.Currencies.FirstOrDefault(c => c.ID == fromCurrencyID);
+            var toCurrency = _context.Currencies.FirstOrDefault(c => c.ID == toCurrencyID);
+
+            if (fromCurrency == null || toCurrency == null)
             {
-                try
-                {
-                    decimal convertedAmount = converterService.Convert(amount, fromCurrencyID, toCurrencyID);
-                    ViewBag.ConvertedAmount = convertedAmount;
-                    ViewBag.FromCurrency = fromCurrencyID;
-                    ViewBag.ToCurrency = toCurrencyID;
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
-
-                }
+                ModelState.AddModelError("", "Invalid currency IDs provided.");
+                ViewBag.Currencies = GetCurrencySelectListItems();
+                return View();
             }
-            // Re-populate dropdown in case of validation errors
-            ViewBag.Currencies = _context.Currencies
-                                      .Select(c => new SelectListItem
-                                      {
-                                          Value = c.ID.ToString(),
-                                          Text = c.Name
-                                      })
-                                      .ToList();
 
-            return View();
+            try
+            {
+                // Convert amount using the currency converter service
+                var convertedAmount = converterService.Convert(amount, fromCurrencyID, toCurrencyID);
+
+                // Set ViewBag values for display in the view
+                ViewBag.ConvertedAmount = convertedAmount;
+                ViewBag.ToCurrency = toCurrency.Name;
+
+                ViewBag.Currencies = GetCurrencySelectListItems();
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "An error occurred during currency conversion.");
+                // Log the exception or handle it appropriately
+                return View();
+            }
+        }
+
+        // Helper method to retrieve currency select list items
+        private List<SelectListItem> GetCurrencySelectListItems()
+        {
+            return _context.Currencies
+                            .Select(c => new SelectListItem
+                            {
+                                Value = c.ID.ToString(),
+                                Text = c.Name
+                            })
+                            .ToList();
         }
 
 
